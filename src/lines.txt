@@ -1,0 +1,33 @@
+title|The floor is lava!|ryan
+gj|Great job, Alex!|amy
+aj|Awesome jump, Alex!|ryan
+hot|Hot hot hot!|ryan
+hot2|Ooh! Hot hot hot!|amy
+legend|Alex, you're a lava legend!|amy
+power|Volcano power!|ryan
+l1|Level one. Living Room Lava!|amy
+l2|Level two. Jungle Volcano!|amy
+l3|Level three. Lava Caves!|amy
+l4|Level four. Volcano Summit!|amy
+boots|Fire boots! Walk on the lava!|ryan
+rocket|Rocket jump! Jump again in the air!|ryan
+shield|Bubble shield!|amy
+check|Checkpoint!|amy
+rise|Uh oh! The lava is rising! Climb, Alex!|amy
+erupt|The volcano is erupting! Grab the coins!|ryan
+king|It's the grumpy Volcano King! Bounce on his head three times!|ryan
+hit1|Boing! That's one!|amy
+hit2|Two! One more bounce!|amy
+happy|Hooray! The Volcano King is happy now!|amy
+did|You did it, Alex!|ryan
+stomp|Nice stomp, Alex!|ryan
+wow|Wow! A sparkly gem!|amy
+way|Way to go, Alex!|amy
+super|Super jump!|ryan
+go|Let's go, Alex!|ryan
+oops|Oopsie! Let's try again from the flag!|amy
+clear|Level clear! Great job, Alex!|amy
+heart|Extra heart!|amy
+pop|Pop! The bubble saved you!|amy
+couch|Jump to the couch, Alex!|amy
+qhint|Bonk the question block from below!|amy
