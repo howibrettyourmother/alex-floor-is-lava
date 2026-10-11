@@ -21,13 +21,14 @@ function drawHUD(){HUDB=[];const p=8+insL(),t=8;rrect(p,t,214,34,17);X.fillStyle
   if(boss&&boss.st!=='happy'){const bw=150,bx=cx-bw/2,by=t+44;rrect(bx,by,bw,22,11);X.fillStyle='rgba(40,10,30,0.55)';X.fill();txt('KING',bx+24,by+11,11,'#ffd23f',{sw:0});for(let i=0;i<3;i++){X.save();X.translate(bx+64+i*28,by+11);star(0,0,9,i<boss.hp?'#ffd23f':'rgba(255,255,255,0.25)');X.restore()}}}
 function drawCoinStatic(){ell(0,0,10,11,'#b8760f');ell(0,0,8.5,9.5,'#ffd23f');X.fillStyle='#fff3a8';X.fillRect(-1.5,-5,3,10)}
 function drawGemIcon(x,y){X.beginPath();X.moveTo(x-9,y-3);X.lineTo(x-4.5,y-9);X.lineTo(x+4.5,y-9);X.lineTo(x+9,y-3);X.lineTo(x,y+10);X.closePath();X.fillStyle='#4dd6ff';X.fill();X.fillStyle='rgba(255,255,255,0.6)';X.beginPath();X.moveTo(x-4.5,y-9);X.lineTo(x,y-3);X.lineTo(x-9,y-3);X.fill()}
-function hudTap(p){for(const b of HUDB){if(p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h){if(b.id==='pause'){paused=true;AUD.SFX.click()}else toggleMute();return true}}return false}
+function hudTap(p){for(const b of HUDB){if(p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h){if(b.id==='pause'){paused=true;clearInput();AUD.SFX.click()}else toggleMute();return true}}return false}
 // ---------- on-screen controls (CSS px) ----------
 function drawControls(){if(!(state==='play'||state==='card'))return;const c=ctl(),k=c.k;X.setTransform(DPR,0,0,DPR,0,0);
   const arrow=(b,d,on)=>{circ(b.x,b.y+3,b.r,'rgba(0,0,0,0.22)');circ(b.x,b.y,b.r,on?'rgba(255,230,160,0.75)':'rgba(255,255,255,0.32)');X.strokeStyle='rgba(255,255,255,0.8)';X.lineWidth=3;X.beginPath();X.arc(b.x,b.y,b.r,0,TAU);X.stroke();
     X.fillStyle=on?'#8a2a0a':'rgba(255,255,255,0.95)';X.beginPath();X.moveTo(b.x+d*b.r*0.45,b.y);X.lineTo(b.x-d*b.r*0.25,b.y-b.r*0.42);X.lineTo(b.x-d*b.r*0.25,b.y+b.r*0.42);X.closePath();X.fill()};
   X.globalAlpha=autoRun?0.6:1;arrow(c.L,-1,inp.l&&!bot.on);arrow(c.R,1,inp.r&&!bot.on);X.globalAlpha=1;
-  if(autoRun){X.font='bold '+Math.round(12*k)+'px '+FONT;X.textAlign='center';X.fillStyle='#fff';X.fillText('AUTO-RUN',(c.L.x+c.R.x)/2,c.L.y-c.L.r-10*k)}
+  if(autoRun){const bx=(c.L.x+c.R.x)/2,by=c.L.y-c.L.r-16*k,bw=150*k,bh=24*k;X.beginPath();X.roundRect?X.roundRect(bx-bw/2,by-bh/2,bw,bh,bh/2):X.rect(bx-bw/2,by-bh/2,bw,bh);X.fillStyle='rgba(82,214,106,0.9)';X.fill();X.strokeStyle='#fff';X.lineWidth=2;X.stroke();
+    X.font='bold '+Math.round(13*k)+'px '+FONT;X.textAlign='center';X.textBaseline='middle';X.fillStyle='#fff';X.fillText('AUTO-RUN ON \u25B6',bx,by+1)}
   const J=c.J,on=inp.j;circ(J.x,J.y+4,J.r,'rgba(0,0,0,0.25)');const g=X.createRadialGradient(J.x-J.r*0.3,J.y-J.r*0.4,4,J.x,J.y,J.r);g.addColorStop(0,on?'#fff2a8':'#ffd23f');g.addColorStop(1,on?'#ffb02e':'#ff6a1f');
   X.fillStyle=g;X.beginPath();X.arc(J.x,J.y,J.r*(on?0.94:1),0,TAU);X.fill();X.strokeStyle='#fff';X.lineWidth=4;X.stroke();
   X.fillStyle='#fff';X.beginPath();X.moveTo(J.x,J.y-J.r*0.55);X.lineTo(J.x-J.r*0.25,J.y-J.r*0.22);X.lineTo(J.x+J.r*0.25,J.y-J.r*0.22);X.fill();
@@ -51,7 +52,7 @@ function drawTitle(){const W=VW;camX=200+Math.sin(T*0.12)*200;camY=0;lavaY=L0;dr
   const p=10+insL();rrect(p,VH-64,6*34+16,54,14);X.fillStyle='rgba(40,10,30,0.55)';X.fill();txt('HERO COLOR',p+8+3*34,VH-53,10,'#fff',{sw:0});
   CAPES.forEach((c,i)=>{const cx=p+25+i*34,cy=VH-28;if(i===capeI)circ(cx,cy,15,'#fff');circ(cx,cy,12,c[0]);X.beginPath();X.arc(cx,cy,12,Math.PI,0);X.fillStyle=c[1];X.fill();btn('cape'+i,cx-17,cy-20,34,40)});
   const ax=VW-10-insR()-128;rrect(ax,VH-56,128,40,20);X.fillStyle=autoRun?'#52d66a':'rgba(40,10,30,0.55)';X.fill();X.strokeStyle='#fff';X.lineWidth=2;X.stroke();txt(autoRun?'AUTO-RUN: ON':'AUTO-RUN: OFF',ax+64,VH-36,12,'#fff',{sw:3});btn('auto',ax,VH-62,128,52);
-  roundIcon('mute',VW-10-insR()-20,26,18,muteIcon);
+  roundIcon('mute',VW-10-insR()-20,26,18,muteIcon);txt('v'+VERSION,VW-10-insR()-20,52,8,'rgba(255,255,255,0.55)',{sw:0});
   rrect(p,12,124,30,15);X.fillStyle='rgba(40,10,30,0.55)';X.fill();star(p+16,27,9,'#ffd23f');txt('BEST '+best,p+30,28,13,'#fff',{a:'left',sw:0})}
 // ---------- overlays ----------
 function panel(w,h,y){const x=VW/2-w/2;rrect(x,y+6,w,h,22);X.fillStyle='rgba(30,5,20,0.4)';X.fill();rrect(x,y,w,h,22);const g=X.createLinearGradient(0,y,0,y+h);g.addColorStop(0,'#fff6e0');g.addColorStop(1,'#ffd9a8');X.fillStyle=g;X.fill();X.strokeStyle='#ff8a3d';X.lineWidth=4;X.stroke();return x}
@@ -66,7 +67,8 @@ function drawClear(){const t=stT;dim(Math.min(0.4,t*0.5));const y=VH/2-90;X.save
   txt('Hearts bonus +'+(hearts*100),VW/2,y+114,13,'#c0392b',{sw:0});if(t>1.5)txt(lvI<3?'TAP FOR NEXT LEVEL!':'',VW/2,y+146+Math.sin(T*6)*2,15,'#ff6a1f',{sw:0});X.restore()}
 function drawOops(){const t=stT;dim(Math.min(0.5,t));const y=VH/2-70;panel(300,130,y);txt('Oopsie!',VW/2,y+34,30,'#fff',{st:'#c0392b',sw:7});txt('Back to the flag — hearts refilled!',VW/2,y+70,14,'#7a3a1a',{sw:0});
   for(let i=0;i<3;i++){const on=t>0.4+i*0.3;X.save();X.translate(VW/2+(i-1)*34,y+102);const s=on?easeB(Math.min(1,(t-0.4-i*0.3)*4)):0.7;X.scale(s,s);heart(0,0,13,on?'#ff4d6d':'#e8c8a8');X.restore()}}
-function drawPaused(){dim(0.55);const y=VH/2-100;panel(300,200,y);txt('PAUSED',VW/2,y+34,28,'#fff',{st:'#c0392b',sw:7});bigBtn('resume','PLAY ON!',VW/2,y+92,200,52,'#7cff6b','#2fa84a');bigBtn('home','HOME',VW/2,y+156,160,44,'#ffe14d','#ff7b1f')}
+function drawPaused(){dim(0.55);const y=VH/2-122;panel(300,244,y);txt('PAUSED',VW/2,y+34,28,'#fff',{st:'#c0392b',sw:7});bigBtn('resume','PLAY ON!',VW/2,y+90,200,52,'#7cff6b','#2fa84a');bigBtn('home','HOME',VW/2,y+150,160,44,'#ffe14d','#ff7b1f');
+  const ax=VW/2-75;rrect(ax,y+188,150,36,18);X.fillStyle=autoRun?'#52d66a':'rgba(90,40,30,0.55)';X.fill();X.strokeStyle='#fff';X.lineWidth=2;X.stroke();txt(autoRun?'AUTO-RUN: ON':'AUTO-RUN: OFF',VW/2,y+206,13,'#fff',{sw:3});btn('auto',ax,y+184,150,44)}
 function drawEnd(){const W=VW;camX=200+Math.sin(T*0.12)*200;camY=0;lavaY=L0;drawBG('summit');fwT-=1/60;
   X.save();X.translate(-camX,-camY);drawParts();X.restore();drawLava();
   if(W>620){const kx=W-150;X.fillStyle='#3e2a3a';X.beginPath();X.moveTo(kx-24,L0+30);X.lineTo(kx-14,L0-36);X.quadraticCurveTo(kx+62,L0-48,kx+138,L0-36);X.lineTo(kx+148,L0+30);X.fill();rrect(kx-18,L0-42,160,12,6);X.fillStyle='#6a4a5a';X.fill();const hop=Math.abs(Math.sin(T*3));drawKing({x:kx,y:L0-40-118-hop*22,w:124,h:118,st:'happy',sq:hop<0.15?0.2:0})}
@@ -109,16 +111,19 @@ function render(){X.setTransform(DPR,0,0,DPR,0,0);X.fillStyle='#2a0f2e';X.fillRe
 // ---------- flow ----------
 function startPlay(){if(state!=='card')return;state='play';card=null;jumpEdge=false;say('go',2,0.5)}
 function nextLevel(){if(lvI<3)startLevel(lvI+1);else finish()}
-function toTitle(){state='title';paused=false;boss=null;AUD.setTheme('title');parts=[];floats=[]}
+function setAuto(v){autoRun=!!v;localStorage.setItem('afl_auto',autoRun?'1':'0');AUD.SFX.click()}
+// Auto-Run is optional; a tap on LEFT mid-level switches it off (and remembers that), so a kid is never stuck running right.
+function autoRunOff(){if(!autoRun)return;setAuto(false);showBanner('AUTO-RUN OFF','#ffffff',1.6)}
+function toTitle(){clearInput();state='title';stT=0;paused=false;boss=null;AUD.setTheme('title');parts=[];floats=[]}
 function fmtT(s){s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function finish(){state='end';stT=0;paused=false;const r=gemsTotal?gems/gemsTotal:0;const stars=r>=0.75?3:r>=0.4?2:1;const nb=score>best;if(nb){best=score;localStorage.setItem('afl_best',best)}
   endStats={stars,gems,gt:gemsTotal,coins,time:fmtT(runTime),score,newBest:nb};AUD.setTheme('win');AUD.SFX.fanfare();setTimeout(()=>AUD.SFX.cheer(),500);say('did',3);parts=[];fwT=0}
-function uiKey(k){if(k==='pause'){if(state==='play'){paused=!paused;AUD.SFX.click()}return}
-  if(paused){paused=false;return}if(state==='title'){AUD.SFX.click();newGame(0)}else if(state==='card'&&card.t>0.4)startPlay();else if(state==='clear'&&stT>1.5)nextLevel();else if(state==='end'&&stT>1.5){newGame(0)}}
+function uiKey(k){if(k==='pause'){if(state==='play'){paused=!paused;clearInput();AUD.SFX.click()}return}
+  if(paused){paused=false;clearInput();return}if(state==='title'){AUD.SFX.click();newGame(0)}else if(state==='card'&&card.t>0.4)startPlay();else if(state==='clear'&&stT>1.5)nextLevel();else if(state==='end'&&stT>1.5){newGame(0)}}
 function uiTap(p){let hit=null;for(let i=UI.length-1;i>=0;i--){const b=UI[i];if(p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h){hit=b.id;break}}
-  if(paused){if(hit==='resume'){paused=false;AUD.SFX.click()}else if(hit==='home'){AUD.SFX.click();toTitle()}return}
+  if(paused){if(hit==='resume'){paused=false;clearInput();AUD.SFX.click()}else if(hit==='home'){AUD.SFX.click();toTitle()}else if(hit==='auto'){setAuto(!autoRun)}return}
   if(state==='title'){if(hit==='play'){AUD.SFX.click();newGame(0)}else if(hit&&hit.startsWith('lv')){AUD.SFX.click();newGame(+hit.slice(2))}
-    else if(hit&&hit.startsWith('cape')){capeI=+hit.slice(4);localStorage.setItem('afl_cape',capeI);AUD.SFX.boing()}else if(hit==='auto'){autoRun=!autoRun;localStorage.setItem('afl_auto',autoRun?'1':'0');AUD.SFX.click()}else if(hit==='mute')toggleMute();return}
+    else if(hit&&hit.startsWith('cape')){capeI=+hit.slice(4);localStorage.setItem('afl_cape',capeI);AUD.SFX.boing()}else if(hit==='auto'){if(stT>1)setAuto(!autoRun)}else if(hit==='mute')toggleMute();return}
   if(state==='card'){if(card.t>0.4)startPlay();return}if(state==='clear'){if(stT>1.5)nextLevel();return}
   if(state==='end'){if(hit==='again'){AUD.SFX.click();newGame(0)}else if(hit==='home'){AUD.SFX.click();toTitle()}}}
 // ---------- update loop ----------
@@ -146,4 +151,4 @@ if(DEBUG)window.__A={get state(){return state},get hero(){return hero},get heart
   get falls(){return falls},get deaths(){return deaths},get stomps(){return stomps},get powCount(){return powCount},get runTime(){return runTime},get erupt(){return erupt},get lavaY(){return lavaY},get card(){return card},get paused(){return paused},get stT(){return stT},get endStats(){return endStats},get camX(){return camX},
   audio:AUD,newGame,startPlay,finish,set TS(v){TS=v},get TS(){return TS},bot(on){bot.on=on;if(!on){inp.l=inp.r=inp.j=0}},give(t){grantPower(t)},tele(x,y){hero.x=x;hero.y=(y==null?surfaceBelow(x+PW/2,-400):y)-PH;hero.vx=0;hero.vy=0;camUpdate(0,true)},
   toClient:(x,y)=>({x:x*SC+OX,y:y*SC+OY}),ctl,get VW(){return VW},get portrait(){return portrait},stomp(e){stomp(e)},startHot(){startHot(false)},get ui(){return UI.map(b=>({id:b.id,x:b.x+b.w/2,y:b.y+b.h/2}))},get hud(){return HUDB.map(b=>({id:b.id,x:b.x+b.w/2,y:b.y+b.h/2}))},
-  get autoRun(){return autoRun},get capeI(){return capeI},set stT(v){stT=v}};
+  get autoRun(){return autoRun},set autoRun(v){autoRun=!!v},get inp(){return {l:inp.l,r:inp.r,j:inp.j}},get nptrs(){return ptrs.size},get version(){return VERSION},get capeI(){return capeI},set stT(v){stT=v}};

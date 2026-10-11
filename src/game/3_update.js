@@ -3,7 +3,7 @@ const LAVA_SURF={lava:1,x:-1e9,w:2e9,y:0};
 let drops=[],fwT=0,saidHint={};
 function mkHero(x,y){return{x,y:y-PH,vx:0,vy:0,ground:null,face:1,coy:0,buf:0,inv:0,hot:null,pw:{boots:0,rocket:0,shield:0},dj:1,sq:0,run:0,air:0,jumpX:x,lastSafe:null,cheer:0,ctrl:0,prevFeet:y,bounced:0,blink:3}}
 function newGame(i){score=0;coins=0;gems=0;gemsTotal=0;runTime=0;stomps=0;falls=0;deaths=0;powCount=0;bigJumps=0;levelsDone=[];startLevel(i||0,true)}
-function startLevel(i,first){lvI=i;L=buildLevel(i);hero=mkHero(L.start.x,L.start.y);hearts=3;lavaY=L0;checkpoint={x:L.start.x,y:L.start.y};fallLog=[];boss=null;erupt=null;drops=[];
+function startLevel(i,first){clearInput();lvI=i;L=buildLevel(i);hero=mkHero(L.start.x,L.start.y);hearts=3;lavaY=L0;checkpoint={x:L.start.x,y:L.start.y};fallLog=[];boss=null;erupt=null;drops=[];
   parts=[];floats=[];banner=null;lvCoins=0;lvGems=0;gemsTotal+=L.gemsTotal;lvStartScore=score;saidHint={};camX=0;camY=0;camUpdate(0,true);
   state='card';stT=0;card={i,t:0};AUD.setTheme(LEVELS[i].music);if(first&&i===0)say('title',3);say(LEVELS[i].voice,3)}
 function onScreen(x,y,m){m=m||60;return x>camX-m&&x<camX+VW+m&&y>camY-m&&y<camY+VH+m}

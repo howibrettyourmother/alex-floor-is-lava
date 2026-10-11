@@ -1,7 +1,7 @@
 // ================= core: canvas, layout, input, state =================
 const cv=document.getElementById('c'),X=cv.getContext('2d');
 const DEBUG=/[?&]debug=1/.test(location.search),OGMODE=/[?&]og=1/.test(location.search);
-const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
+const VERSION='1.1.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
 let SW=0,SH=0,DPR=1,SC=1,VW=640,OX=0,OY=0,portrait=false,INS={l:0,r:0,t:0,b:0};
 const insEl=document.createElement('div');insEl.style.cssText='position:fixed;left:0;top:0;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);visibility:hidden;pointer-events:none';document.body.appendChild(insEl);
 function resize(){SW=innerWidth;SH=innerHeight;DPR=Math.min(devicePixelRatio||1,2.5);
@@ -34,19 +34,37 @@ function ctl(){if(!portrait){const k=clamp(SH/390,1,1.7),pad=14*k;const y=SH-INS
 function zoneFor(px,py){const c=ctl();
   if(portrait){if(py<OY+VH*SC+6)return null;return px>SW*0.6?'j':(px<(c.L.x+c.R.x)/2?'l':'r')}
   if(py<SH*0.3)return null;if(px>c.R.x+c.R.r*1.7)return 'j';return px<(c.L.x+c.R.x)/2?'l':'r'}
+// Input tracking. Touches are tracked per Touch.identifier ('t'+id) via Touch Events; mouse/pen via Pointer Events ('p'+id).
+// iOS can silently drop a touchend (app switch, notification, multitasking gesture, Siri, lock), which used to leave a
+// finger "held" on RIGHT forever. So: every touch event reconciles against e.touches (the fingers really on the glass),
+// and any cancel / blur / visibility change / pagehide clears ALL input state.
 const ptrs=new Map();
 function syncInp(){let l=0,r=0,j=0;for(const z of ptrs.values()){if(z==='l')l=1;if(z==='r')r=1;if(z==='j')j=1}
   inp.l=l||keys.ArrowLeft||keys.KeyA?1:0;inp.r=r||keys.ArrowRight||keys.KeyD?1:0;inp.j=j||keys.Space||keys.ArrowUp||keys.KeyW||keys.KeyZ?1:0}
+function clearInput(){ptrs.clear();for(const k in keys)keys[k]=0;jumpEdge=false;inp.l=inp.r=inp.j=0;syncInp()}
 const toL=(px,py)=>({x:(px-OX)/SC,y:(py-OY)/SC});
-cv.addEventListener('pointerdown',e=>{e.preventDefault();const p=toL(e.clientX,e.clientY);
-  if(state==='play'&&!paused){if(hudTap(p))return;const z=zoneFor(e.clientX,e.clientY);if(z){ptrs.set(e.pointerId,z);if(z==='j')jumpEdge=true;syncInp();return}}
-  uiTap(p,e)},{passive:false});
-cv.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;const z=ptrs.get(e.pointerId);if(z==='l'||z==='r'){const n=zoneFor(e.clientX,e.clientY);if(n==='l'||n==='r'){ptrs.set(e.pointerId,n);syncInp()}}});
-const up=e=>{if(ptrs.delete(e.pointerId))syncInp()};['pointerup','pointercancel','pointerleave'].forEach(ev=>cv.addEventListener(ev,up));
-addEventListener('blur',()=>{ptrs.clear();for(const k in keys)keys[k]=0;syncInp()});
-addEventListener('keydown',e=>{if(e.repeat){return}keys[e.code]=1;if(['Space','ArrowUp','KeyW','KeyZ'].includes(e.code)){jumpEdge=true;if(state!=='play')uiKey('go')}
+function press(id,cx,cy){const p=toL(cx,cy);
+  if(state==='play'&&!paused){if(hudTap(p))return;const z=zoneFor(cx,cy);if(z){ptrs.set(id,z);if(z==='j')jumpEdge=true;if(z==='l')autoRunOff();syncInp();return}}
+  uiTap(p)}
+function slide(id,cx,cy){const z=ptrs.get(id);if(z!=='l'&&z!=='r')return;const n=zoneFor(cx,cy);if((n==='l'||n==='r')&&n!==z){ptrs.set(id,n);syncInp()}}
+function release(id){if(ptrs.delete(id))syncInp()}
+function reconcile(e){const live=new Set();for(let i=0;i<e.touches.length;i++)live.add('t'+e.touches[i].identifier);let ch=false;
+  for(const k of [...ptrs.keys()])if(k[0]==='t'&&!live.has(k)){ptrs.delete(k);ch=true}if(ch)syncInp()}
+const each=(e,fn)=>{for(let i=0;i<e.changedTouches.length;i++){const t=e.changedTouches[i];fn('t'+t.identifier,t.clientX,t.clientY)}};
+cv.addEventListener('touchstart',e=>{e.preventDefault();reconcile(e);each(e,press)},{passive:false});
+cv.addEventListener('touchmove',e=>{e.preventDefault();reconcile(e);each(e,slide)},{passive:false});
+cv.addEventListener('touchend',e=>{each(e,release);reconcile(e)});
+cv.addEventListener('touchcancel',()=>clearInput());
+// mouse / pen only (touch is handled above, so a finger is never counted twice)
+const isT=e=>e.pointerType==='touch';
+cv.addEventListener('pointerdown',e=>{if(isT(e))return;e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}press('p'+e.pointerId,e.clientX,e.clientY)},{passive:false});
+cv.addEventListener('pointermove',e=>{if(!isT(e))slide('p'+e.pointerId,e.clientX,e.clientY)});
+['pointerup','lostpointercapture'].forEach(ev=>addEventListener(ev,e=>{if(!isT(e))release('p'+e.pointerId)}));
+addEventListener('pointercancel',()=>clearInput());
+addEventListener('blur',clearInput);addEventListener('pagehide',clearInput);
+document.addEventListener('visibilitychange',()=>{clearInput();if(document.hidden&&state==='play')paused=true});
+addEventListener('keydown',e=>{if(e.repeat){return}keys[e.code]=1;if(state==='play'&&!paused&&(e.code==='ArrowLeft'||e.code==='KeyA'))autoRunOff();if(['Space','ArrowUp','KeyW','KeyZ'].includes(e.code)){jumpEdge=true;if(state!=='play')uiKey('go')}
   if(e.code==='Enter')uiKey('go');if(e.code==='KeyP'||e.code==='Escape')uiKey('pause');if(e.code==='KeyM')toggleMute();syncInp();if(e.code.startsWith('Arrow')||e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=0;syncInp()});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play')paused=true});
 function toggleMute(){AUD.setMuted(!AUD.muted);AUD.SFX.click()}
 function say(k,prio,minGap){if(minGap&&T-lastSay<minGap)return false;const r=AUD.say(k,prio||1);if(r)lastSay=T;return r}
