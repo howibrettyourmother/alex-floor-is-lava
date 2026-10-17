@@ -1,13 +1,14 @@
 // ================= core: canvas, layout, input, state =================
 const cv=document.getElementById('c'),X=cv.getContext('2d');
 const DEBUG=/[?&]debug=1/.test(location.search),OGMODE=/[?&]og=1/.test(location.search);
-const VERSION='1.1.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
-let SW=0,SH=0,DPR=1,SC=1,VW=640,OX=0,OY=0,portrait=false,INS={l:0,r:0,t:0,b:0};
+const VERSION='1.2.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
+let SW=0,SH=0,DPR=1,SC=1,VW=640,OX=0,OY=0,portrait=false,TAB=false,INS={l:0,r:0,t:0,b:0};
 const insEl=document.createElement('div');insEl.style.cssText='position:fixed;left:0;top:0;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);visibility:hidden;pointer-events:none';document.body.appendChild(insEl);
-function resize(){SW=innerWidth;SH=innerHeight;DPR=Math.min(devicePixelRatio||1,2.5);
+function resize(){SW=innerWidth;SH=innerHeight;DPR=Math.min(devicePixelRatio||1,Math.min(SW,SH)>=700?1.5:2.5);
   const cs=getComputedStyle(insEl);INS={t:parseFloat(cs.paddingTop)||0,r:parseFloat(cs.paddingRight)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0};
-  portrait=SH>SW*1.1;
+  portrait=SH>SW*1.1;TAB=Math.min(SW,SH)>=700; // iPad: fill portrait, no 'turn sideways' banner
   if(!portrait){SC=SH/VH;VW=SW/SC;OX=0;OY=0}
+  else if(TAB){VW=430;SC=SW/VW;OX=0;OY=Math.round(INS.t+14)}
   else{VW=430;SC=SW/VW;OX=0;OY=Math.round(Math.max(INS.t+84,(SH-VH*SC)*0.3))}
   cv.width=Math.round(SW*DPR);cv.height=Math.round(SH*DPR);cv.style.width=SW+'px';cv.style.height=SH+'px'}
 addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));resize();

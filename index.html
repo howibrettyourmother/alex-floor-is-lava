@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="app-version" content="1.1.0"><meta http-equiv="Cache-Control" content="no-cache, must-revalidate"><meta http-equiv="Pragma" content="no-cache">
+<meta name="app-version" content="1.2.0"><meta http-equiv="Cache-Control" content="no-cache, must-revalidate"><meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Floor Is Lava"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#ff6a1f">
 <title>The Floor Is Lava! — Alex's Volcano Adventure</title>
@@ -150,13 +150,14 @@ const AUD=(()=>{
 // ================= core: canvas, layout, input, state =================
 const cv=document.getElementById('c'),X=cv.getContext('2d');
 const DEBUG=/[?&]debug=1/.test(location.search),OGMODE=/[?&]og=1/.test(location.search);
-const VERSION='1.1.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
-let SW=0,SH=0,DPR=1,SC=1,VW=640,OX=0,OY=0,portrait=false,INS={l:0,r:0,t:0,b:0};
+const VERSION='1.2.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
+let SW=0,SH=0,DPR=1,SC=1,VW=640,OX=0,OY=0,portrait=false,TAB=false,INS={l:0,r:0,t:0,b:0};
 const insEl=document.createElement('div');insEl.style.cssText='position:fixed;left:0;top:0;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);visibility:hidden;pointer-events:none';document.body.appendChild(insEl);
-function resize(){SW=innerWidth;SH=innerHeight;DPR=Math.min(devicePixelRatio||1,2.5);
+function resize(){SW=innerWidth;SH=innerHeight;DPR=Math.min(devicePixelRatio||1,Math.min(SW,SH)>=700?1.5:2.5);
   const cs=getComputedStyle(insEl);INS={t:parseFloat(cs.paddingTop)||0,r:parseFloat(cs.paddingRight)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0};
-  portrait=SH>SW*1.1;
+  portrait=SH>SW*1.1;TAB=Math.min(SW,SH)>=700; // iPad: fill portrait, no 'turn sideways' banner
   if(!portrait){SC=SH/VH;VW=SW/SC;OX=0;OY=0}
+  else if(TAB){VW=430;SC=SW/VW;OX=0;OY=Math.round(INS.t+14)}
   else{VW=430;SC=SW/VW;OX=0;OY=Math.round(Math.max(INS.t+84,(SH-VH*SC)*0.3))}
   cv.width=Math.round(SW*DPR);cv.height=Math.round(SH*DPR);cv.style.width=SW+'px';cv.style.height=SH+'px'}
 addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));resize();
@@ -743,7 +744,7 @@ function drawControls(){if(!(state==='play'||state==='card'))return;const c=ctl(
   X.font='bold '+Math.round(J.r*0.4)+'px '+FONT;X.textAlign='center';X.textBaseline='middle';X.lineWidth=4;X.strokeStyle='#a33a0a';X.strokeText('JUMP',J.x,J.y+J.r*0.15);X.fillText('JUMP',J.x,J.y+J.r*0.15);
   if(hero&&hero.pw.rocket>0&&!hero.ground){X.font='bold '+Math.round(11*k)+'px '+FONT;X.fillStyle='#bff3ff';X.fillText('AGAIN!',J.x,J.y-J.r-10*k)}}
 function drawPortraitFrame(){X.setTransform(DPR,0,0,DPR,0,0);const g=X.createLinearGradient(0,0,0,SH);g.addColorStop(0,'#3a1240');g.addColorStop(1,'#7a1f2a');X.fillStyle=g;X.fillRect(0,0,SW,SH);
-  const ty=Math.max(INS.t+10,OY-70);X.save();X.translate(SW/2-110,ty+30);X.rotate(Math.sin(T*2)>0?-Math.PI/2*ease((Math.sin(T*2))):0);rrect(-12,-20,24,40,5);X.fillStyle='#fff';X.fill();rrect(-9,-15,18,28,2);X.fillStyle='#ff8a3d';X.fill();X.restore();
+  if(TAB){const y0=OY+VH*SC,g2=X.createLinearGradient(0,y0,0,SH);g2.addColorStop(0,'#e8551c');g2.addColorStop(0.35,'#a8241a');g2.addColorStop(1,'#4a0f1c');X.fillStyle=g2;X.fillRect(0,y0,SW,SH-y0);X.fillStyle='rgba(255,210,63,0.25)';for(let i=0;i<9;i++){const bx=(i*137+T*18*(i%3+1))%SW,by=y0+20+((i*61)%Math.max(1,SH-y0-40));X.beginPath();X.arc(bx,by,6+i%4*3,0,TAU);X.fill()}return}const ty=Math.max(INS.t+10,OY-70);X.save();X.translate(SW/2-110,ty+30);X.rotate(Math.sin(T*2)>0?-Math.PI/2*ease((Math.sin(T*2))):0);rrect(-12,-20,24,40,5);X.fillStyle='#fff';X.fill();rrect(-9,-15,18,28,2);X.fillStyle='#ff8a3d';X.fill();X.restore();
   X.font='bold 17px '+FONT;X.textAlign='left';X.textBaseline='middle';X.fillStyle='#ffe14d';X.fillText('Turn your phone sideways',SW/2-86,ty+20);X.fillStyle='#fff';X.font='bold 14px '+FONT;X.fillText('for BIG lava fun!',SW/2-86,ty+42)}
 // ---------- title ----------
 function drawTitle(){const W=VW;camX=200+Math.sin(T*0.12)*200;camY=0;lavaY=L0;drawBG('summit');
