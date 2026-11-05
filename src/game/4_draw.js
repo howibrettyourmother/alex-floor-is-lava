@@ -18,7 +18,8 @@ function drawVolcano(cx,by,sc,act,happy){X.save();X.translate(cx,by);X.scale(sc,
     const gl=X.createRadialGradient(0,-170,10,0,-170,160);gl.addColorStop(0,'rgba(255,190,60,0.5)');gl.addColorStop(1,'rgba(255,120,0,0)');X.fillStyle=gl;X.fillRect(-170,-330,340,320)}
   X.restore()}
 function drawBG(th){const W=VW;let g;
-  if(th==='living'){g=X.createLinearGradient(0,0,0,VH);g.addColorStop(0,'#fff1d6');g.addColorStop(1,'#ffcf9a');X.fillStyle=g;X.fillRect(0,0,W,VH);
+  if(th==='fort'){X.fillStyle='#5a6a3a';X.fillRect(x+16,y-78,120,78);X.fillStyle='#8a9a4a';X.beginPath();X.moveTo(x+4,y-74);X.lineTo(x+76,y-120);X.lineTo(x+148,y-74);X.fill();rrect(x+58,y-48,36,48,4);X.fillStyle='#3a2a1a';X.fill();txt('★',x+76,y-90,22,'#ffd23f')}
+  else if(th==='living'){g=X.createLinearGradient(0,0,0,VH);g.addColorStop(0,'#fff1d6');g.addColorStop(1,'#ffcf9a');X.fillStyle=g;X.fillRect(0,0,W,VH);
     const ox=-(camX*0.3)%60,oy=-camY*0.3;X.fillStyle='rgba(255,170,120,0.16)';for(let x=ox-60;x<W+60;x+=60)X.fillRect(x,0,26,VH);
     X.fillStyle='rgba(255,255,255,0.3)';for(let x=ox-60;x<W+60;x+=60)for(let y=(oy%50)-50;y<VH;y+=50){X.beginPath();X.arc(x+43,y+25,3,0,TAU);X.fill()}
     const p=0.45,sp=430,i0=Math.floor(camX*p/sp)-1;for(let i=i0;i<i0+W/sp+3;i++){const x=i*sp-camX*p,y=80-camY*p,k=Math.floor(hsh(i)*5);
@@ -45,6 +46,9 @@ function drawBG(th){const W=VW;let g;
     p=0.4;sp=200;i0=Math.floor(camX*p/sp)-1;for(let i=i0;i<i0+W/sp+3;i++){const x=i*sp-camX*p+hsh(i)*60,y=300-camY*p-hsh(i+9)*80;crystal(x,y,0.7+hsh(i+1)*0.6,hsh(i+2)<0.5?'#b06bff':'#4de0ff',0.55)}
     p=0.7;sp=90;i0=Math.floor(camX*p/sp)-1;X.fillStyle='#1a0c28';for(let i=i0;i<i0+W/sp+3;i++){const x=i*sp-camX*p,len=30+hsh(i)*70,yy=-camY*p-20;X.beginPath();X.moveTo(x,yy);X.lineTo(x+22,yy);X.lineTo(x+11,yy+len+20);X.fill()}
     for(let i=0;i<14;i++){const x=(hsh(i)*W+T*12*(1+hsh(i+5)))%W,y=VH-((T*26*(0.5+hsh(i+7))+hsh(i+2)*VH)%VH);circ(x,y,1.6+hsh(i)*1.5,'rgba(255,190,90,0.8)')}}
+  else if(th==='fort'){g=X.createLinearGradient(0,0,0,VH);g.addColorStop(0,'#6a7a4a');g.addColorStop(0.55,'#c4a35a');g.addColorStop(1,'#ff8a3d');X.fillStyle=g;X.fillRect(0,0,W,VH);
+    for(let i=0;i<6;i++){const x=((i*210-camX*0.1)%(W+240)+W+240)%(W+240)-120;X.fillStyle='rgba(40,50,30,0.35)';X.fillRect(x,80-camY*0.05,70,90);X.fillStyle='rgba(60,70,40,0.5)';X.fillRect(x+10,60-camY*0.05,50,20);X.fillStyle='#3a4a2a';X.fillRect(x+28,40-camY*0.05,14,30)}
+    for(let i=0;i<10;i++){const x=(hsh(i)*W+T*8)%W,y=40+(hsh(i+3)*80);circ(x,y,2,'rgba(255,220,120,0.5)')}}
   else{g=X.createLinearGradient(0,0,0,VH);g.addColorStop(0,'#6a3a9a');g.addColorStop(0.45,'#ff6e7f');g.addColorStop(1,'#ffbf69');X.fillStyle=g;X.fillRect(0,0,W,VH);
     for(let i=0;i<5;i++){const x=((i*260-camX*0.08-T*6)%(W+300)+W+300)%(W+300)-150,y=50+i*23-camY*0.05;ell(x,y,60,12,'rgba(255,220,230,0.45)');ell(x+30,y-6,40,12,'rgba(255,230,240,0.45)')}
     drawVolcano(W*0.62-camX*0.03,330-camY*0.06,1.25,!!erupt||state==='title');
@@ -82,7 +86,7 @@ function drawSolid(s){if(s.off)return;if(s.x>camX+VW+40||s.x+s.w<camX-40||s.y>ca
   case'crystal':rrect(x,y,w,16,6);X.fillStyle='#5a3a7a';X.fill();X.fillStyle='#8a6ab0';X.fillRect(x+4,y+2,w-8,3);for(let i=0;i<w/22;i++){const cx=x+11+i*22;X.fillStyle=i%2?'#4de0ff':'#c58bff';X.beginPath();X.moveTo(cx-7,y+14);X.lineTo(cx,y+30+(i%3)*5);X.lineTo(cx+7,y+14);X.fill()}
     const gl=X.createLinearGradient(0,y+14,0,y+40);gl.addColorStop(0,'rgba(180,120,255,0.35)');gl.addColorStop(1,'rgba(180,120,255,0)');X.fillStyle=gl;X.fillRect(x,y+14,w,26);break;
   case'ledge':rrect(x,y,w,18,6);X.fillStyle='#4a2f42';X.fill();X.fillStyle='#7a4a5a';X.fillRect(x+4,y+2,w-8,3);X.strokeStyle='#ff8a2a';X.lineWidth=2;X.beginPath();X.moveTo(x+14,y+9);X.lineTo(x+30,y+13);X.lineTo(x+48,y+8);X.lineTo(x+w-14,y+12);X.stroke();break;
-  case'pipe':{const pc={living:'#4fb86a',jungle:'#4fb86a',caves:'#3bb3c3',summit:'#d98a3a'}[L?L.theme:'jungle'];const g=X.createLinearGradient(x,0,x+w,0);g.addColorStop(0,shade(pc,-0.3));g.addColorStop(0.35,shade(pc,0.35));g.addColorStop(1,shade(pc,-0.35));
+  case'pipe':{const pc={living:'#4fb86a',jungle:'#4fb86a',caves:'#3bb3c3',summit:'#d98a3a',fort:'#6a7a4a'}[L?L.theme:'jungle'];const g=X.createLinearGradient(x,0,x+w,0);g.addColorStop(0,shade(pc,-0.3));g.addColorStop(0.35,shade(pc,0.35));g.addColorStop(1,shade(pc,-0.35));
     X.fillStyle=g;X.fillRect(x+4,y+14,w-8,bot-y-14);rrect(x-2,y,w+4,18,5);X.fillStyle=g;X.fill();X.strokeStyle=shade(pc,-0.45);X.lineWidth=2;X.strokeRect(x-2,y,w+4,18);ell(x+w/2,y+3,w/2-4,4,shade(pc,-0.55));break}
   case'wall':{const g=X.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#3e2a3a');g.addColorStop(1,'#5a3a4a');X.fillStyle=g;X.fillRect(x,camY-20,w,bot-camY+20);X.strokeStyle='rgba(255,140,60,0.6)';X.lineWidth=2;for(let yy=Math.floor(camY/50)*50;yy<bot;yy+=50){X.beginPath();X.moveTo(x+6,yy);X.lineTo(x+w-8,yy+18);X.stroke()}break}
   default:X.fillStyle='#888';X.fillRect(x,y,w,s.h)}}
@@ -108,7 +112,8 @@ function drawCP(c){const x=c.x,y=c.y;X.fillStyle='#e8e8f0';X.fillRect(x,y-86,5,8
   if(c.on)star(x+20,fy+12,6,'#fff');else circ(x+20,fy+12,4,'#fff3d6')}
 function star(x,y,r,f,rot){X.beginPath();for(let i=0;i<10;i++){const a=(rot||0)-Math.PI/2+i*Math.PI/5,rr2=i%2?r*0.45:r;X.lineTo(x+Math.cos(a)*rr2,y+Math.sin(a)*rr2)}X.closePath();X.fillStyle=f;X.fill()}
 function drawGoal(g){const x=g.x,y=g.y,th=L.theme;
-  if(th==='living'){X.fillStyle='#7ab8ff';X.beginPath();X.moveTo(x+10,y);X.lineTo(x+80,y-90);X.lineTo(x+150,y);X.fill();X.fillStyle='#ffd6e8';X.beginPath();X.moveTo(x+80,y-90);X.lineTo(x+150,y);X.lineTo(x+120,y);X.fill();
+  if(th==='fort'){X.fillStyle='#5a6a3a';X.fillRect(x+16,y-78,120,78);X.fillStyle='#8a9a4a';X.beginPath();X.moveTo(x+4,y-74);X.lineTo(x+76,y-120);X.lineTo(x+148,y-74);X.fill();rrect(x+58,y-48,36,48,4);X.fillStyle='#3a2a1a';X.fill();txt('★',x+76,y-90,22,'#ffd23f')}
+  else if(th==='living'){X.fillStyle='#7ab8ff';X.beginPath();X.moveTo(x+10,y);X.lineTo(x+80,y-90);X.lineTo(x+150,y);X.fill();X.fillStyle='#ffd6e8';X.beginPath();X.moveTo(x+80,y-90);X.lineTo(x+150,y);X.lineTo(x+120,y);X.fill();
     X.fillStyle='#3a5aa8';X.beginPath();X.moveTo(x+62,y);X.lineTo(x+80,y-40);X.lineTo(x+98,y);X.fill();for(let i=0;i<4;i++){rrect(x+4+i*38,y-16,36,18,8);X.fillStyle=PASTEL[i];X.fill()}txt('SAFE ZONE',x+80,y-104,13,'#fff',{st:'#3a5aa8'})}
   else if(th==='jungle'){X.fillStyle='#9a6a3a';X.fillRect(x+20,y-70,110,70);X.fillStyle='#e0b060';X.beginPath();X.moveTo(x+6,y-66);X.lineTo(x+75,y-120);X.lineTo(x+144,y-66);X.fill();rrect(x+60,y-44,30,44,4);X.fillStyle='#5a3a1a';X.fill();circ(x+40,y-46,9,'#ffe9a3');circ(x+110,y-46,9,'#ffe9a3')}
   else{X.fillStyle='#4a2f62';rrect(x+10,y-120,130,120,20);X.fill();rrect(x+40,y-90,70,90,30);const gg=X.createLinearGradient(0,y-90,0,y);gg.addColorStop(0,'#c58bff');gg.addColorStop(1,'#4de0ff');X.fillStyle=gg;X.fill();crystal(x+20,y-112,0.5,'#4de0ff');crystal(x+130,y-112,0.5,'#c58bff')}

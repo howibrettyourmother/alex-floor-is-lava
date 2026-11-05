@@ -1,7 +1,7 @@
 // ================= core: canvas, layout, input, state =================
 const cv=document.getElementById('c'),X=cv.getContext('2d');
 const DEBUG=/[?&]debug=1/.test(location.search),OGMODE=/[?&]og=1/.test(location.search);
-const VERSION='1.2.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
+const VERSION='1.3.0';const VH=360,L0=300,FONT='"Arial Rounded MT Bold","Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif';
 let SW=0,SH=0,DPR=1,SC=1,VW=640,OX=0,OY=0,portrait=false,TAB=false,INS={l:0,r:0,t:0,b:0};
 const insEl=document.createElement('div');insEl.style.cssText='position:fixed;left:0;top:0;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);visibility:hidden;pointer-events:none';document.body.appendChild(insEl);
 function resize(){SW=innerWidth;SH=innerHeight;DPR=Math.min(devicePixelRatio||1,Math.min(SW,SH)>=700?1.5:2.5);
@@ -19,7 +19,7 @@ const approach=(v,t,d)=>v<t?Math.min(v+d,t):Math.max(v-d,t);
 const ov=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 // ---------- persistent prefs ----------
 const CAPES=[['#e53935','#ffca28'],['#1e88e5','#ff7043'],['#8e24aa','#ffd54f'],['#43a047','#ffee58'],['#fb8c00','#4fc3f7'],['#ec407a','#b2ff59']];
-let capeI=+(localStorage.getItem('afl_cape')||0)%CAPES.length,best=+(localStorage.getItem('afl_best')||0),unlockLv=+(localStorage.getItem('afl_unlock')||1),autoRun=localStorage.getItem('afl_auto')==='1';
+let capeI=+(localStorage.getItem('afl_cape')||0)%CAPES.length,best=+(localStorage.getItem('afl_best')||0),unlockLv=+(localStorage.getItem('afl_unlock')||1),autoRun=localStorage.getItem('afl_auto')==='1',diff=+(localStorage.getItem('afl_diff')||0),medals=JSON.parse(localStorage.getItem('afl_medals')||'{}');
 // ---------- physics constants (forgiving!) ----------
 const GRAV=2100,GRAV_HOLD=1150,JV=565,RUNV=215,ACC=1700,AIR=1300,DEC=2600,MAXF=700,COY=0.14,BUF=0.18,PW=24,PH=34,BOUNCEV=820;
 const POW_T={boots:12,rocket:25};

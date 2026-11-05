@@ -3,7 +3,7 @@ const LAVA_SURF={lava:1,x:-1e9,w:2e9,y:0};
 let drops=[],fwT=0,saidHint={};
 function mkHero(x,y){return{x,y:y-PH,vx:0,vy:0,ground:null,face:1,coy:0,buf:0,inv:0,hot:null,pw:{boots:0,rocket:0,shield:0},dj:1,sq:0,run:0,air:0,jumpX:x,lastSafe:null,cheer:0,ctrl:0,prevFeet:y,bounced:0,blink:3}}
 function newGame(i){score=0;coins=0;gems=0;gemsTotal=0;runTime=0;stomps=0;falls=0;deaths=0;powCount=0;bigJumps=0;levelsDone=[];startLevel(i||0,true)}
-function startLevel(i,first){clearInput();lvI=i;L=buildLevel(i);hero=mkHero(L.start.x,L.start.y);hearts=3;lavaY=L0;checkpoint={x:L.start.x,y:L.start.y};fallLog=[];boss=null;erupt=null;drops=[];
+function startLevel(i,first){clearInput();lvI=i;L=buildLevel(i);hero=mkHero(L.start.x,L.start.y);hearts=diff?2:3;lavaY=L0;checkpoint={x:L.start.x,y:L.start.y};fallLog=[];boss=null;erupt=null;drops=[];
   parts=[];floats=[];banner=null;lvCoins=0;lvGems=0;gemsTotal+=L.gemsTotal;lvStartScore=score;saidHint={};camX=0;camY=0;camUpdate(0,true);
   state='card';stT=0;card={i,t:0};AUD.setTheme(LEVELS[i].music);if(first&&i===0)say('title',3);say(LEVELS[i].voice,3)}
 function onScreen(x,y,m){m=m||60;return x>camX-m&&x<camX+VW+m&&y>camY-m&&y<camY+VH+m}
@@ -83,7 +83,7 @@ function hurt(fromX){const h=hero;if(h.inv>0||h.hot||state!=='play')return;const
   hearts--;h.inv=1.8;AUD.SFX.hurt();h.vx=away*230;h.vy=-330;h.ground=null;h.ctrl=0.22;shake=Math.max(shake,0.2);ftext('Ouch!',h.x+PW/2,h.y-10,'#ffd0d0');
   if(hearts<=0){h.hot={t:0,dur:1.0,x0:h.x,y0:h.y,out:1}}}
 function oops(){deaths++;state='oops';stT=0;say('oops',3)}
-function respawn(){const c=checkpoint;hero=mkHero(c.x,c.y);hero.inv=2;hearts=3;state='play';fallLog=[];drops=[];
+function respawn(){const c=checkpoint;hero=mkHero(c.x,c.y);hero.inv=2;hearts=diff?2:3;state='play';fallLog=[];drops=[];
   for(const z of L.zones){if(c.x<z.x0+5){z.on=0;z.done=0}}lavaY=L0;if(L.zones.some(z=>z.on&&!z.done))lavaY=Math.min(L0,c.y+160);camUpdate(0,true)}
 // ---------- blocks, items, power-ups ----------
 function hitBlock(b){b.bump=1;AUD.SFX.bump();if(b.used)return;b.used=1;
@@ -120,7 +120,7 @@ function worldStep(dt){const h=hero;
   for(const c of L.coins){if(c.got)continue;if(c.fall){if(c.rest==null){c.y+=c.vy*dt;const sb=surfaceBelow(c.x,c.y-12);if(sb!=null&&c.y+10>=sb){c.y=sb-10;c.rest=0}if(c.y>lavaY+20){c.got=1;continue}}else{c.rest+=dt;if(c.rest>6){c.got=1;continue}}}
     if(Math.abs(c.x-cx)<21&&Math.abs(c.y-cy)<27&&!h.hot){c.got=1;coins++;lvCoins++;score+=10;AUD.SFX.coin();sparkle(c.x,c.y,4);if(coins%100===0&&hearts<3){hearts++;ftext('+♥',cx,h.y-10,'#ff7a90',1)}}}
   for(const g of L.gems){if(g.got)continue;if(Math.abs(g.x-cx)<26&&Math.abs(g.y-cy)<30&&!h.hot){g.got=1;gems++;lvGems++;score+=200;AUD.SFX.gem();sparkle(g.x,g.y,18);ftext('GEM!',g.x,g.y-16,'#bff7ff',1);h.cheer=1;say(gems===1||R()<0.5?'wow':'gj',1,6)}}
-  for(const c of L.cps){if(c.on)continue;if(h.x+PW>c.x-6&&Math.abs(h.y+PH-c.y)<220){c.on=1;checkpoint={x:c.x,y:c.y};fallLog=[];const was=hearts;hearts=3;AUD.SFX.check();sparkle(c.x+14,c.y-60,14);
+  for(const c of L.cps){if(c.on)continue;if(h.x+PW>c.x-6&&Math.abs(h.y+PH-c.y)<220){c.on=1;checkpoint={x:c.x,y:c.y};fallLog=[];const was=hearts;hearts=diff?2:3;AUD.SFX.check();sparkle(c.x+14,c.y-60,14);
     ftext(was<3?'CHECKPOINT! ♥ full':'CHECKPOINT!',c.x+14,c.y-90,'#b6ff9e',1);say(R()<0.6?'check':'gj',2,3)}}
   for(const s of L.signs){if(s.said||Math.abs(h.x-s.x)>60)continue;s.said=1;if(s.k==='jump')say('couch',2);if(s.k==='q')say('qhint',2);if(s.k==='lava')say('title',1,4)}
   let rising=false;for(const z of L.zones){if(!z.on&&!z.done&&h.x>z.x0){z.on=1;z.t=0;say('rise',3);showBanner('THE LAVA IS RISING!','#ff8a1f',2.4)}
@@ -142,9 +142,9 @@ function worldStep(dt){const h=hero;
   if(L.goal&&h.x+PW>L.goal.x&&state==='play')levelClear();
   if(onScreen(h.x,lavaY,40)&&R()<dt*0.6)AUD.SFX.blorp()}
 function levelClear(){state='clear';stT=0;AUD.SFX.fanfare();setTimeout(()=>AUD.SFX.cheer(),400);say('clear',3);score+=hearts*100;levelsDone.push(lvI);
-  if(lvI+2>unlockLv){unlockLv=Math.min(4,lvI+2);localStorage.setItem('afl_unlock',unlockLv)}hero.cheer=5;const gx=L.goal.x,LL=L;for(let i=0;i<3;i++)setTimeout(()=>{if(L===LL&&state==='clear')firework(gx+rr(-80,120),camY+rr(60,140))},i*450)}
+  if(lvI+2>unlockLv){unlockLv=Math.min(5,lvI+2);localStorage.setItem('afl_unlock',unlockLv)}medals[lvI]=Math.max(medals[lvI]||0,L.gemsTotal?Math.min(3,Math.ceil(3*lvGems/Math.max(1,L.gemsTotal))):2);localStorage.setItem('afl_medals',JSON.stringify(medals));confetti(40,L.goal?L.goal.x:hero.x,hero.y);hero.cheer=5;const gx=L.goal.x,LL=L;for(let i=0;i<3;i++)setTimeout(()=>{if(L===LL&&state==='clear')firework(gx+rr(-80,120),camY+rr(60,140))},i*450)}
 // ---------- Volcano King ----------
-function bossStart(){const A=L.arena;boss={x:A.x0+A.w-200,y:A.y-140-260,w:150,h:140,vx:0,vy:0,hp:3,st:'intro',t:0,face:-1,sq:0,n:0,mood:0};A.gate.off=0;
+function bossStart(){const A=L.arena;boss={x:A.x0+A.w-200,y:A.y-140-260,w:150,h:140,vx:0,vy:0,hp:diff?4:3,st:'intro',t:0,face:-1,sq:0,n:0,mood:0};A.gate.off=0;
   say('king',3);AUD.setTheme('boss');showBanner('THE VOLCANO KING!','#ffd23f',2.6);AUD.SFX.grumble();checkpoint={x:A.x0+80,y:A.y}}
 function bossStep(dt){const b=boss,h=hero,A=L.arena;b.t+=dt;if(b.sq)b.sq=approach(b.sq,0,dt*3);
   const bcx=b.x+b.w/2,hcx=h.x+PW/2,dir=hcx<bcx?-1:1;
@@ -166,7 +166,7 @@ function bossStomp(){const b=boss,h=hero,bcx=b.x+b.w/2;h.vy=-720;h.vx=(h.x+PW/2<
   b.hp--;b.st='stun';b.t=0;AUD.SFX.bossHit();shake=0.35;score+=500;sparkle(bcx,b.y,20);ftext('BOING!',bcx,b.y-30,'#ffe14d',1);
   if(b.hp===2)say('hit1',3);else if(b.hp===1)say('hit2',3);else bossWin()}
 function bossWin(){const b=boss;b.st='happy';b.t=0;state='bosswin';stT=0;fwT=0;say('happy',3);AUD.SFX.cheer();AUD.setTheme('win');score+=1000;
-  for(const e of L.enemies)if(!e.dead&&e.boss){e.dead=0.001;sparkle(e.x+15,e.y,8);L.coins.push({x:e.x+15,y:e.y,got:0,fall:1,vy:100,ph:0})}levelsDone.push(lvI)}
+  for(const e of L.enemies)if(!e.dead&&e.boss){e.dead=0.001;sparkle(e.x+15,e.y,8);L.coins.push({x:e.x+15,y:e.y,got:0,fall:1,vy:100,ph:0})}levelsDone.push(lvI);medals[lvI]=3;localStorage.setItem('afl_medals',JSON.stringify(medals));if(lvI+2>unlockLv){unlockLv=Math.min(5,lvI+2);localStorage.setItem('afl_unlock',unlockLv)}}
 // ---------- camera ----------
 function camUpdate(dt,snap){const h=hero;let tx=h.x+PW/2-VW*0.38+h.face*16;
   if(boss&&L.arena){const A=L.arena,lo=A.x0-36,hi=A.x0+A.w+80-VW;tx=hi<lo?(lo+hi)/2:clamp(tx,lo,hi)}
