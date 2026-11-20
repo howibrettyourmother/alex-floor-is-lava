@@ -708,10 +708,10 @@ function drawHero(cx,by,o){o=o||{};const cape=CAPES[capeI][0],helm=CAPES[capeI][
   const leg=(a,sh)=>{X.save();X.translate(sh,-13);X.rotate(a);rrect(-3.5,0,7,11,3);X.fillStyle='#3a4a8a';X.fill();rrect(-4,8,11,6,3);X.fillStyle=o.boots?'#ff6a1f':'#7a3a1a';X.fill();
     if(o.boots){X.fillStyle='#ffd23f';X.beginPath();X.moveTo(-3,8);X.lineTo(-1,2+Math.sin(T*25+sh)*2);X.lineTo(2,8);X.fill()}X.restore()};
   if(air){leg(-0.5,-3);leg(0.6,4)}else{leg(sw*0.7,-3);leg(-sw*0.7,4)}
-  rrect(-8,-32,16,21,6);X.fillStyle='#fffaf0';X.fill();X.fillStyle=cape;rrect(-8,-17,16,5,2);X.fill();txt('A',0,-24,9,cape,{sw:0});
+  rrect(-8,-32,16,21,6);X.fillStyle='#1e8a96';X.fill();X.fillStyle='#e8b84a';rrect(-6,-32,12,4,2);X.fill();
   const arm=(a,sh)=>{X.save();X.translate(sh,-29);X.rotate(a);rrect(-2.5,0,5,11,2.5);X.fillStyle='#fffaf0';X.fill();circ(0,12,3.4,'#ffd2a8');X.restore()};
   if(cheer||hot){arm(Math.PI-0.5+Math.sin(T*16)*0.3,-7);arm(-Math.PI+0.5-Math.sin(T*16)*0.3,7)}else if(air){arm(2.4,-7);arm(-2.2,7)}else{arm(-sw*0.8+0.15,-7);arm(sw*0.8-0.15,7)}
-  const hy=-43;circ(0,hy,11.5,'#ffd2a8');X.fillStyle='#6a3a1a';X.beginPath();X.arc(-6,hy-4,4,0,TAU);X.fill();
+  const hy=-43;circ(0,hy,11.5,'#ffd2a8');X.fillStyle='#3a2416';X.beginPath();X.arc(-6,hy-4,4,0,TAU);X.fill();circ(-2,hy-8,3.2,'#3a2416');circ(5,hy-9,3.4,'#3a2416');circ(8,hy-5,3,'#3a2416');
   X.fillStyle=helm;X.beginPath();X.arc(0,hy-2,12.5,Math.PI,0);X.lineTo(15,hy-1);X.lineTo(-13,hy-1);X.fill();X.fillStyle=shade(helm,-0.25);X.fillRect(-13,hy-3,28,3.5);X.fillStyle='rgba(255,255,255,0.5)';X.beginPath();X.ellipse(-4,hy-9,4,2,-0.4,0,TAU);X.fill();
   circ(6,hy-8,3.6,'#ff7b1f');circ(6,hy-8,1.8,'#ffe14d');
   if(hot){X.strokeStyle='#3a1a1a';X.lineWidth=1.8;X.beginPath();X.moveTo(1,hy+0);X.lineTo(4,hy+2);X.lineTo(1,hy+4);X.moveTo(9,hy);X.lineTo(6,hy+2);X.lineTo(9,hy+4);X.stroke();ell(5,hy+7.5,3,3.5,'#7a1a1a')}
