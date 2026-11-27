@@ -8,6 +8,7 @@ power|Volcano power!|ryan
 l1|Level one. Living Room Lava!|amy
 l2|Level two. Jungle Volcano!|amy
 l3|Level three. Lava Caves!|amy
+ltb|Tank Base Blast!|ryan
 l4|Level four. Volcano Summit!|amy
 boots|Fire boots! Walk on the lava!|ryan
 rocket|Rocket jump! Jump again in the air!|ryan
@@ -15,9 +16,9 @@ shield|Bubble shield!|amy
 check|Checkpoint!|amy
 rise|Uh oh! The lava is rising! Climb, Alex!|amy
 erupt|The volcano is erupting! Grab the coins!|ryan
-king|It's the grumpy Volcano King! Bounce on his head three times!|ryan
-hit1|Boing! That's one!|amy
-hit2|Two! One more bounce!|amy
+king|It's the grumpy Volcano King! Bounce on his head!|ryan
+hit1|Boing! Nice bounce!|amy
+hit2|Yes! One more bounce!|amy
 happy|Hooray! The Volcano King is happy now!|amy
 did|You did it, Alex!|ryan
 stomp|Nice stomp, Alex!|ryan
@@ -31,3 +32,6 @@ heart|Extra heart!|amy
 pop|Pop! The bubble saved you!|amy
 couch|Jump to the couch, Alex!|amy
 qhint|Bonk the question block from below!|amy
+tank|Look out! Lava tanks!|ryan
+surf|Lava surf!|amy
+smash|Lava smash!|ryan

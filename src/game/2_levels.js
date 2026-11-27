@@ -3,7 +3,7 @@ const LEVELS=[
  {theme:'living',name:'Living Room Lava',voice:'l1',music:'living',sub:'Couches, pillows & the classic game!'},
  {theme:'jungle',name:'Jungle Volcano',voice:'l2',music:'jungle',sub:'Bouncy mushrooms & a rumbling volcano!'},
  {theme:'caves',name:'Lava Caves',voice:'l3',music:'caves',sub:'Sparkly crystals & rising lava!'},
- {theme:'fort',name:'Tank Base Blast',voice:'power',music:'summit',sub:'Dodge the lava tanks & grab the medals!'},
+ {theme:'fort',name:'Tank Base Blast',voice:'tank',music:'boss',sub:'Dodge the lava tanks & grab the medals!'},
  {theme:'summit',name:'Volcano Summit',voice:'l4',music:'summit',sub:'Meet the grumpy Volcano King!'}];
 let B=null;
 const PH_OF={table:14,log:18,cushion:22,island:24,crystal:20,ledge:18};
@@ -24,6 +24,7 @@ function arcGap(a,b){const x0=a.x+a.w-22,x1=b.x+22,n=Math.max(3,Math.round((x1-x
 function gem(x,y){B.gems.push({x,y,got:0,c:B.gems.length%5})}
 function blob(s,off,k){const e={k:k||'blob',x:s.x+off,y:s.y-26,w:30,h:26,vx:-(diff?52:38),minX:s.x+2,maxX:s.x+s.w-32,ph:srand()*9,dead:0,base:s.y,vy:0,jt:srr(0.5,1.5)};B.enemies.push(e);return e}
 function bat(x,y,range){B.enemies.push({k:'bat',x,y,x0:x,y0:y,w:30,h:24,range:range||70,ph:srand()*9,dead:0,vx:0,vy:0})}
+function tank(s,off){const e={k:'tank',x:s.x+off,y:s.y-42,w:56,h:42,vx:-(diff?36:24),minX:s.x+4,maxX:s.x+s.w-60,ph:srand()*9,dead:0,base:s.y,vy:0,shot:srr(0.8,1.8)};B.enemies.push(e);return e}
 function cp(s,off){B.cps.push({x:s.x+off,y:s.y,on:0})}
 function sign(x,y,k){B.signs.push({x,y,k})}
 function mover(x,y,w,dx,dy,per,k){B.movers.push({x0:x,y0:y,x,y,px:x,py:y,w,h:20,dx,dy,per,ph:0,k:k||'rockplat',one:1,mover:1})}
@@ -85,18 +86,18 @@ function buildLevel(i){nl(i);let a,b,c,s,x;
  }else if(i===3){// ---------------- 4: Tank Base Blast ----------------
   a=seg(460,220,'basalt');row(a.x+160,186,6);sign(a.x+100,a.y,'run');
   gap(80);b=seg(140,200,'basalt');arcGap(a,b);blob(b,60);gap(80);
-  a=seg(360,215,'basalt');qa(a,70,['coin','shield']);blob(a,220,'hopper');pipe(a.x+280,a,72);
+  a=seg(360,215,'basalt');qa(a,70,['coin','shield']);tank(a,200);pipe(a.x+280,a,72);
   gap(90);b=plat(120,195,'ledge');row(b.x+22,165,3);gap(90);c=plat(120,170,'ledge');gem(c.x+60,120);gap(90);
-  a=seg(420,220,'basalt');cp(a,50);blob(a,160);blob(a,320);eruptAt(a.x+200);
+  a=seg(420,220,'basalt');cp(a,50);blob(a,160);tank(a,300);eruptAt(a.x+200);
   x=a.x+a.w;mover(x+10,205,110,150,0,3.8,'rockplat');gap(270);arc(x+10,x+260,165,7,70);gem(x+135,80);
   a=seg(300,210,'basalt');qa(a,80,['rocket']);blob(a,180,'hopper');
   gap(70);b=seg(90,250,'basalt');bounce(b,'mush');col(b.x+45,160,4,34);gem(b.x+45,-20);gap(120);
   c=seg(90,240,'basalt');bounce(c,'mush');gap(100);
-  a=seg(520,220,'basalt');cp(a,40);pipe(a.x+200,a,80);blob(a,140);blob(a,380,'hopper');row(a.x+220,100,3);
+  a=seg(520,220,'basalt');cp(a,40);pipe(a.x+200,a,80);blob(a,140);tank(a,360);row(a.x+220,100,3);
   gap(80);b=plat(130,190,'ledge');blob(b,50);gap(80);c=plat(130,175,'ledge');gem(c.x+65,125);gap(80);
   a=seg(340,215,'basalt');qa(a,100,['coin','boots']);blob(a,220);
   gap(90);b=seg(200,200,'arena');row(b.x+40,170,5);gem(b.x+100,90);gap(90);
-  a=seg(700,220,'basalt');cp(a,50);row(a.x+140,186,7);qa(a,300,['shield','coin']);blob(a,400,'hopper');goal(a,520);
+  a=seg(700,220,'basalt');cp(a,50);row(a.x+140,186,7);qa(a,300,['shield','coin']);tank(a,400);goal(a,520);
  }else{// ---------------- 5: Volcano Summit + Volcano King ----------------
   a=seg(440,220,'basalt');row(a.x+180,186,6);
   gap(90);b=seg(110,200,'basalt');arcGap(a,b);gap(90);

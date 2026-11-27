@@ -17,7 +17,7 @@ const AUD=(()=>{
       // looping near-silent <audio> => 'playback' audio session so sound works even with the iPhone ringer/silent switch on
       if(!silentEl){silentEl=document.createElement('audio');silentEl.setAttribute('playsinline','');silentEl.setAttribute('webkit-playsinline','');silentEl.setAttribute('x-webkit-airplay','deny');silentEl.preload='auto';silentEl.loop=true;silentEl.src=SILENT_MP3;silentEl.volume=0.01}
       if(silentEl.paused&&!document.hidden){const p=silentEl.play();p&&p.catch&&p.catch(()=>{})}
-      if(!unlocked){unlocked=true;loadClips()}}catch(e){console.warn('unlock',e)}}
+      if(!unlocked){unlocked=true;loadClips();loadSfx()}}catch(e){console.warn('unlock',e)}}
   ['touchstart','touchend','pointerdown','mousedown','click','keydown'].forEach(ev=>window.addEventListener(ev,unlock,{capture:true,passive:true}));
   document.addEventListener('visibilitychange',()=>{if(!C)return;if(document.hidden){C.suspend&&C.suspend().catch(()=>{});silentEl&&silentEl.pause()}
     else if(unlocked){C.resume().catch(()=>{});if(silentEl){const p=silentEl.play();p&&p.catch&&p.catch(()=>{})}}});
@@ -32,36 +32,42 @@ const AUD=(()=>{
   function n(t,d,out){const s=C.createBufferSource();s.buffer=noiseBuf;s.loop=true;s.connect(out);s.start(t,R());s.stop(t+d+0.05);return s}
   const mtof=m=>440*Math.pow(2,(m-69)/12);
   const blip=(type,f0,f1,t,d,v,out)=>{const G=g(0,out||sfxBus);env(G,t,0.004,d*0.3,d*0.7,v);const x=o(type,f0,t,d,f('lowpass',5000,0.7,G));x.frequency.exponentialRampToValueAtTime(f1,t+d);return x};
-  // ---------- SFX (all original synth) ----------
+  // ---------- recorded SFX (audio/sfx) with synth fallback ----------
+  const SFX_FILE={jump:'jump',land:'land',coin:'collect',gem:'sparkle',stomp:'thud',pop:'pop',boing:'boing',whoosh:'whoosh',click:'ui_click',fanfare:'win',cheer:'win',hot:'splash',bump:'thud',check:'star',power:'levelup'};
+  const smp={};
+  function loadSfx(){if(!C)return;const v='20261127refine';Object.keys(SFX_FILE).forEach(function(k){const name=SFX_FILE[k];if(smp[name]||smp[name]==='loading')return;smp[name]='loading';
+    fetch('audio/sfx/'+name+'.mp3?v='+v).then(function(r){return r.ok?r.arrayBuffer():Promise.reject()}).then(function(ab){return C.decodeAudioData(ab.slice(0))}).then(function(b){smp[name]=b}).catch(function(){smp[name]=null})})}
+  function playSmp(key,vol,rate){const name=SFX_FILE[key];if(!name)return false;const b=smp[name];if(!b||b==='loading')return false;
+    const s=C.createBufferSource(),G=C.createGain();s.buffer=b;s.playbackRate.value=(rate||1)*(.96+R()*.08);G.gain.value=vol==null?.88:vol;s.connect(G);G.connect(sfxBus);s.start(0);return true}
   const SFX={
-    jump:safe(()=>{const t=now();blip('square',330,760,t,0.16,0.09);blip('triangle',165,380,t,0.16,0.08)}),
+    jump:safe(()=>{if(playSmp('jump',.9,1.05))return;const t=now();blip('square',330,760,t,0.16,0.09);blip('triangle',165,380,t,0.16,0.08)}),
     rocket:safe(()=>{const t=now();blip('sawtooth',200,900,t,0.3,0.06);const G=g(0,sfxBus);env(G,t,0.01,0.12,0.25,0.22);const F=f('bandpass',900,0.8,G);n(t,0.4,F);F.frequency.exponentialRampToValueAtTime(3500,t+0.35)}),
-    land:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.002,0.01,0.06,0.12);n(t,0.08,f('lowpass',700,0.7,G))}),
-    coin:safe(()=>{const t=now();[[1568,0],[2093,0.06]].forEach(([fr,d])=>{const G=g(0,sfxBus);env(G,t+d,0.002,0.04,0.22,0.08);o('square',fr,t+d,0.28,f('lowpass',5000,0.7,G))})}),
-    gem:safe(()=>{const t=now();[76,83,88,91,95].forEach((m,i)=>{const G=g(0,sfxBus);env(G,t+i*0.05,0.002,0.02,0.4,0.08);o('triangle',mtof(m),t+i*0.05,0.45,G);const G2=g(0,sfxBus);env(G2,t+i*0.05,0.002,0.01,0.2,0.03);o('sine',mtof(m)*3,t+i*0.05,0.25,G2)})}),
-    stomp:safe(()=>{const t=now();blip('square',520,140,t,0.12,0.12);const G=g(0,sfxBus);env(G,t,0.002,0.02,0.1,0.22);n(t,0.13,f('lowpass',1200,1,G));setTimeout(()=>{try{blip('sine',300,900,now(),0.15,0.12)}catch(e){}},60)}),
-    bump:safe(()=>{const t=now();blip('square',220,110,t,0.09,0.12);blip('triangle',440,220,t,0.09,0.1)}),
+    land:safe(()=>{if(playSmp('land',.7,.95))return;const t=now(),G=g(0,sfxBus);env(G,t,0.002,0.01,0.06,0.12);n(t,0.08,f('lowpass',700,0.7,G))}),
+    coin:safe(()=>{if(playSmp('coin',.8,1))return;const t=now();[[1568,0],[2093,0.06]].forEach(([fr,d])=>{const G=g(0,sfxBus);env(G,t+d,0.002,0.04,0.22,0.08);o('square',fr,t+d,0.28,f('lowpass',5000,0.7,G))})}),
+    gem:safe(()=>{if(playSmp('gem',.9,1))return;const t=now();[76,83,88,91,95].forEach((m,i)=>{const G=g(0,sfxBus);env(G,t+i*0.05,0.002,0.02,0.4,0.08);o('triangle',mtof(m),t+i*0.05,0.45,G);const G2=g(0,sfxBus);env(G2,t+i*0.05,0.002,0.01,0.2,0.03);o('sine',mtof(m)*3,t+i*0.05,0.25,G2)})}),
+    stomp:safe(()=>{if(playSmp('stomp',1,.92)){playSmp('boing',.55,1.15);return}const t=now();blip('square',520,140,t,0.12,0.12);const G=g(0,sfxBus);env(G,t,0.002,0.02,0.1,0.22);n(t,0.13,f('lowpass',1200,1,G));setTimeout(()=>{try{blip('sine',300,900,now(),0.15,0.12)}catch(e){}},60)}),
+    bump:safe(()=>{if(playSmp('bump',.75,.85))return;const t=now();blip('square',220,110,t,0.09,0.12);blip('triangle',440,220,t,0.09,0.1)}),
     appear:safe(()=>{const t=now();for(let i=0;i<8;i++)blip('square',mtof(60+i*2),mtof(62+i*2),t+i*0.035,0.05,0.05)}),
-    power:safe(()=>{const t=now();[60,64,67,72,67,72,76,79,84].forEach((m,i)=>{blip('square',mtof(m),mtof(m),t+i*0.055,0.07,0.06);blip('triangle',mtof(m-12),mtof(m-12),t+i*0.055,0.07,0.07)})}),
+    power:safe(()=>{if(playSmp('power',.95,1))return;const t=now();[60,64,67,72,67,72,76,79,84].forEach((m,i)=>{blip('square',mtof(m),mtof(m),t+i*0.055,0.07,0.06);blip('triangle',mtof(m-12),mtof(m-12),t+i*0.055,0.07,0.07)})}),
     bubble:safe(()=>{const t=now();for(let i=0;i<4;i++){const s=t+i*0.07;blip('sine',300+i*120,900+i*200,s,0.09,0.12)}}),
-    pop:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.001,0.01,0.09,0.35);n(t,0.1,f('highpass',1200,0.7,G));blip('sine',900,300,t,0.12,0.15)}),
-    boing:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.005,0.15,0.3,0.16);const x=o('sine',180,t,0.45,G);const L=C.createOscillator(),LG=C.createGain();L.frequency.value=16;LG.gain.value=50;L.connect(LG);LG.connect(x.frequency);L.start(t);L.stop(t+0.5);x.frequency.exponentialRampToValueAtTime(620,t+0.4)}),
-    hot:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.01,0.25,0.4,0.2);const F=f('highpass',2500,0.7,G);n(t,0.7,F);
+    pop:safe(()=>{if(playSmp('pop',.95,1))return;const t=now(),G=g(0,sfxBus);env(G,t,0.001,0.01,0.09,0.35);n(t,0.1,f('highpass',1200,0.7,G));blip('sine',900,300,t,0.12,0.15)}),
+    boing:safe(()=>{if(playSmp('boing',.9,1))return;const t=now(),G=g(0,sfxBus);env(G,t,0.005,0.15,0.3,0.16);const x=o('sine',180,t,0.45,G);const L=C.createOscillator(),LG=C.createGain();L.frequency.value=16;LG.gain.value=50;L.connect(LG);LG.connect(x.frequency);L.start(t);L.stop(t+0.5);x.frequency.exponentialRampToValueAtTime(620,t+0.4)}),
+    hot:safe(()=>{if(playSmp('hot',1,.9))return;const t=now(),G=g(0,sfxBus);env(G,t,0.01,0.25,0.4,0.2);const F=f('highpass',2500,0.7,G);n(t,0.7,F);
       [0,0.18,0.36].forEach(d=>blip('square',500+d*600,1300+d*600,t+d,0.12,0.06))}),
     hurt:safe(()=>{const t=now();blip('square',600,200,t,0.25,0.09);blip('triangle',300,100,t,0.25,0.1)}),
-    check:safe(()=>{const t=now();[72,76,79,84].forEach((m,i)=>{const G=g(0,sfxBus);env(G,t+i*0.08,0.002,0.03,0.5,0.08);o('triangle',mtof(m),t+i*0.08,0.6,G);o('sine',mtof(m+12),t+i*0.08,0.4,g(0.3,G))})}),
+    check:safe(()=>{if(playSmp('check',.85,1))return;const t=now();[72,76,79,84].forEach((m,i)=>{const G=g(0,sfxBus);env(G,t+i*0.08,0.002,0.03,0.5,0.08);o('triangle',mtof(m),t+i*0.08,0.6,G);o('sine',mtof(m+12),t+i*0.08,0.4,g(0.3,G))})}),
     blorp:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.005,0.03,0.12,0.06);const x=o('sine',rr(90,140),t,0.2,G);x.frequency.exponentialRampToValueAtTime(rr(250,380),t+0.12)}),
     rumble:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.2,1.0,1.0,0.4);n(t,2.3,f('lowpass',160,1,G));const x=o('sine',45,t,2.2,g(0.0,G));G.gain.value}),
-    whoosh:safe(()=>{const t=now(),G=g(0,sfxBus);env(G,t,0.08,0.08,0.25,0.15);const F=f('bandpass',500,1.5,G);n(t,0.45,F);F.frequency.exponentialRampToValueAtTime(3000,t+0.4)}),
+    whoosh:safe(()=>{if(playSmp('whoosh',.85,1))return;const t=now(),G=g(0,sfxBus);env(G,t,0.08,0.08,0.25,0.15);const F=f('bandpass',500,1.5,G);n(t,0.45,F);F.frequency.exponentialRampToValueAtTime(3000,t+0.4)}),
     firework:safe(()=>{const t=now();blip('sine',300,1400,t,0.35,0.05);const s=t+0.38,G=g(0,sfxBus);env(G,s,0.001,0.02,0.5,0.3);n(s,0.6,f('lowpass',2500,0.7,G));
       for(let i=0;i<14;i++){const c=s+0.1+rr(0,0.6),B=g(0,sfxBus);env(B,c,0.001,0.003,0.03,rr(0.04,0.1));n(c,0.04,f('highpass',3000,0.7,B))}}),
     bossHit:safe(()=>{const t=now();blip('square',300,80,t,0.35,0.12);const G=g(0,sfxBus);env(G,t,0.002,0.05,0.3,0.3);n(t,0.4,f('lowpass',600,1,G));setTimeout(()=>{try{SFX.boing()}catch(e){}},120)}),
     grumble:safe(()=>{const t=now();for(let k=0;k<3;k++){const s=t+k*0.14,G=g(0,sfxBus);env(G,s,0.02,0.06,0.08,0.13);const F=f('bandpass',500,3,G);const x=o('sawtooth',110-k*8,s,0.18,F);x.frequency.linearRampToValueAtTime(80,s+0.16)}}),
     spit:safe(()=>{const t=now();blip('sine',160,500,t,0.15,0.18);const G=g(0,sfxBus);env(G,t,0.002,0.02,0.12,0.15);n(t,0.15,f('bandpass',900,1,G))}),
-    cheer:safe(()=>{const t=now();for(let k=0;k<10;k++){const s=t+rr(0,0.5),G=g(0,sfxBus),d=rr(0.4,0.8);env(G,s,0.06,d*0.5,d*0.5,0.03);const F=f('bandpass',rr(900,1500),2,G);const x=o('sawtooth',rr(330,520),s,d,F);x.frequency.linearRampToValueAtTime(rr(450,700),s+d*0.6)}
+    cheer:safe(()=>{if(playSmp('cheer',.95,1))return;const t=now();for(let k=0;k<10;k++){const s=t+rr(0,0.5),G=g(0,sfxBus),d=rr(0.4,0.8);env(G,s,0.06,d*0.5,d*0.5,0.03);const F=f('bandpass',rr(900,1500),2,G);const x=o('sawtooth',rr(330,520),s,d,F);x.frequency.linearRampToValueAtTime(rr(450,700),s+d*0.6)}
       for(let i=0;i<24;i++){const s=t+rr(0.05,1.4),G=g(0,sfxBus);env(G,s,0.001,0.005,0.03,rr(0.05,0.12));n(s,0.05,f('bandpass',rr(1000,2400),1.2,G))}}),
-    fanfare:safe(()=>{const t=now();[[67,0],[72,0.12],[76,0.24],[79,0.36],[76,0.54],[79,0.66],[84,0.8]].forEach(([m,d],i)=>{const G=g(0,sfxBus);env(G,t+d,0.01,i==6?0.5:0.08,0.3,0.09);o('square',mtof(m),t+d,0.9,f('lowpass',3200,0.7,G));const G2=g(0,sfxBus);env(G2,t+d,0.005,0.02,0.6,0.07);o('triangle',mtof(m-12),t+d,0.8,G2)})}),
-    click:safe(()=>{const t=now();blip('square',900,1300,t,0.05,0.07)})
+    fanfare:safe(()=>{if(playSmp('fanfare',1,1))return;const t=now();[[67,0],[72,0.12],[76,0.24],[79,0.36],[76,0.54],[79,0.66],[84,0.8]].forEach(([m,d],i)=>{const G=g(0,sfxBus);env(G,t+d,0.01,i==6?0.5:0.08,0.3,0.09);o('square',mtof(m),t+d,0.9,f('lowpass',3200,0.7,G));const G2=g(0,sfxBus);env(G2,t+d,0.005,0.02,0.6,0.07);o('triangle',mtof(m-12),t+d,0.8,G2)})}),
+    click:safe(()=>{if(playSmp('click',.7,1.1))return;const t=now();blip('square',900,1300,t,0.05,0.07)})
   };
   // ---------- one voice at a time, with ducking ----------
   let curEnd=0,curPrio=0,queue=[];
@@ -119,5 +125,5 @@ const AUD=(()=>{
       arp(ch[s16%3]+12+(s16>=8?12:0),t,th.dr==='soft'?0.02:0.025);
       drums(th.dr,s16,bar,t);step++;nextT+=sx}}
   function setMuted(m){muted=m;localStorage.setItem('afl_muted',m?'1':'0');if(C)master.gain.setTargetAtTime(m?0:0.9,now(),0.03)}
-  return{unlock,SFX,say,setTheme,setMuted,get muted(){return muted},get unlocked(){return unlocked&&!!C},get running(){return !!C&&C.state==='running'},get clipCount(){return Object.keys(clips).length},get theme(){return theme},stats,get speaking(){return C&&now()<curEnd}};
+  return{unlock,SFX,say,setTheme,setMuted,get muted(){return muted},get unlocked(){return unlocked&&!!C},get running(){return !!C&&C.state==='running'},get clipCount(){return Object.keys(clips).length},get theme(){return theme},get ctx(){return C},stats,get speaking(){return C&&now()<curEnd}};
 })();
