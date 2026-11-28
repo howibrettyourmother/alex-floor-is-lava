@@ -1,0 +1,32 @@
+# Audio credits (sound effects)
+
+All sound effects in `audio/fx/fx.m4a` are CC0 / public-domain recordings, trimmed, filtered, loudness-matched and packed into one AAC sprite. No attribution is required; credit is given anyway.
+
+- Freesound CC0: "Boing 2" by magnuswaker - https://freesound.org/people/magnuswaker/sounds/540790/  (used for: boing)
+- Freesound CC0: "Crowd cheer" by Krizin - https://freesound.org/people/Krizin/sounds/651646/  (used for: cheer)
+- Freesound CC0: "Funny boing" by se2001 - https://freesound.org/people/se2001/sounds/543641/  (used for: boing)
+- Kenney Digital Audio (CC0) by Kenney - https://kenney.nl/assets  (used for: power)
+- Kenney Interface Sounds (CC0) by Kenney - https://kenney.nl/assets  (used for: click, correct, jump)
+- Kenney Music Jingles (CC0) by Kenney - https://kenney.nl/assets  (used for: fanfare)
+- Kenney RPG Audio (CC0) by Kenney - https://kenney.nl/assets  (used for: land)
+- Kenney Sci-Fi Sounds (CC0) by Kenney - https://kenney.nl/assets  (used for: firework, rocket, rumble)
+- OpenGameArt CC0: 100-cc0-sfx by rubberduck - https://opengameart.org/content/100-cc0-sfx  (used for: firework, jump, stomp, thud)
+- OpenGameArt CC0: 12-coin-sound-effects by starninjas - https://opengameart.org/content/12-coin-sound-effects  (used for: coin)
+- OpenGameArt CC0: 18-random-video-game-sound-effects by bart - https://opengameart.org/content/18-random-video-game-sound-effects  (used for: boing)
+- OpenGameArt CC0: 25-sounds-from-avalanche-minigame by fvcalderan - https://opengameart.org/content/25-sounds-from-avalanche-minigame  (used for: hurt, jump)
+- OpenGameArt CC0: 3-pop-sounds by wubitog - https://opengameart.org/content/3-pop-sounds  (used for: pop)
+- OpenGameArt CC0: 40-cc0-water-splash-slime-sfx by rubberduck - https://opengameart.org/content/40-cc0-water-splash-slime-sfx  (used for: bubble, splat)
+- OpenGameArt CC0: 80-cc0-rpg-sfx by rubberduck - https://opengameart.org/content/80-cc0-rpg-sfx  (used for: gem, grumble)
+- OpenGameArt CC0: air-whoosh by pyranostudios - https://opengameart.org/content/air-whoosh  (used for: whoosh)
+- OpenGameArt CC0: applause-in-a-large-hall-or-church by expl0it3r - https://opengameart.org/content/applause-in-a-large-hall-or-church  (used for: cheer)
+- OpenGameArt CC0: boing by aeva - https://opengameart.org/content/boing  (used for: boing)
+- OpenGameArt CC0: boings by ezduzziteh - https://opengameart.org/content/boings  (used for: boing, jump)
+- OpenGameArt CC0: bubble-sound-effects by bmaczero - https://opengameart.org/content/bubble-sound-effects  (used for: bubble)
+- OpenGameArt CC0: cure-magic by someoneman - https://opengameart.org/content/cure-magic  (used for: sparkle)
+- OpenGameArt CC0: pop-effect-sounds by trezegames - https://opengameart.org/content/pop-effect-sounds  (used for: pop)
+- OpenGameArt CC0: silly-sound-effects by ezduzziteh - https://opengameart.org/content/silly-sound-effects  (used for: bloop)
+- OpenGameArt CC0: squish-sounds-effects by ezduzziteh - https://opengameart.org/content/squish-sounds-effects  (used for: splat)
+- OpenGameArt CC0: swishes-sound-pack by artisticdude - https://opengameart.org/content/swishes-sound-pack  (used for: whoosh)
+- OpenGameArt CC0: thwack-sounds by antumdeluge - https://opengameart.org/content/thwack-sounds  (used for: hurt, thud)
+
+Music loops and songs are the original tracks for these games (unchanged).
